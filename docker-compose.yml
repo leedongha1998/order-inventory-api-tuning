@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:16
+    container_name: my-postgres
+    environment:
+      POSTGRES_USER: dongha
+      POSTGRES_PASSWORD: dongha
+      POSTGRES_DB: api-tuning
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
