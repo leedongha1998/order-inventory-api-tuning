@@ -1,8 +1,14 @@
 spring:
+  application:
+    name: order-api-tuning
   datasource:
     url: jdbc:postgresql://localhost:5432/api-tuning
     username: dongha
     password: dongha
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10
+      leak-detection-threshold: 2000 # 20s 이상 점유 시 경고
   jpa:
     hibernate:
       ddl-auto: validate
@@ -10,8 +16,40 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+        generate_statistics: true
   flyway:
     enabled: true
     baseline-on-migrate: true
     validate-on-migrate: true
     out-of-order: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      scenario: ${SCENARIO:baseline}   # A/B 비교용: normalized/denormalized 등
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+        "[jdbc.query]": true
+      slo:
+        "[http.server.requests]":
+          - 50ms
+          - 100ms
+          - 200ms
+          - 300ms
+          - 500ms
+          - 1s
+
+  prometheus:
+    metrics:
+      export:
+        step: 5s  # 스크랩 주기와 맞춤
