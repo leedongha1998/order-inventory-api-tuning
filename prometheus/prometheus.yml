@@ -1,0 +1,25 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: "spring-boot"
+    metrics_path: /actuator/prometheus
+    static_configs:
+      # 앱이 compose 외부(host에서 8080): host.docker.internal 사용 (맥/윈도)
+      - targets: ["host.docker.internal:8080"]
+        labels: {env: "local", app: "order-api-tuning"}
+      # 앱이 compose 안에서 'app' 서비스명으로 뜬다면 ↓ 사용
+      # - targets: ["app:8080"]
+
+  - job_name: "postgres-exporter"
+    static_configs:
+      - targets: ["postgres-exporter:9187"]
+
+  - job_name: "redis"   # (redis-exporter 추가 시)
+    static_configs:
+      - targets: ["redis-exporter:9121"]
+
+  - job_name: "cadvisor"  # (옵션) 컨테이너 CPU/메모리
+    static_configs:
+      - targets: ["cadvisor:8080"]
