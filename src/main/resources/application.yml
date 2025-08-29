@@ -20,6 +20,7 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
+    create-schemas: true
     validate-on-migrate: true
     out-of-order: false
 
