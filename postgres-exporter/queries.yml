@@ -1,0 +1,19 @@
+pg_stat_statements:
+  query: |
+    SELECT queryid, calls, total_time, mean_time, rows
+    FROM pg_stat_statements
+    ORDER BY total_time DESC
+    LIMIT 50;
+  metrics:
+    - queryid:
+        usage: "LABEL"
+        description: "Normalized query hash"
+    - calls:
+        usage: "COUNTER"
+        description: "Times executed"
+    - total_time:
+        usage: "GAUGE"
+        description: "Total time (ms)"
+    - mean_time:
+        usage: "GAUGE"
+        description: "Mean time (ms)"
