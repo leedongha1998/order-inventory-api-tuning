@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bench_idx_off
+    username: dongha
+    password: dongha
+  flyway:
+    enabled: true
+server:
+  port: 8080

@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: idx-on
   application:
     name: order-api-tuning
   datasource:

@@ -1,0 +1,11 @@
+db,mode,iter,planning_ms,execution_ms,shared_hit,shared_read
+bench_idx_on,on,1,5.780,67.339,1,102
+bench_idx_off,off,1,6.935,1547.991,3406,6087
+bench_idx_on,on,2,4.803,0.275,103,0
+bench_idx_off,off,2,4.544,668.584,3502,5991
+bench_idx_on,on,3,3.945,0.231,103,0
+bench_idx_off,off,3,3.527,711.895,3598,5895
+bench_idx_on,on,4,4.725,0.259,103,0
+bench_idx_off,off,4,4.511,728.858,3694,5799
+bench_idx_on,on,5,4.673,1.012,103,0
+bench_idx_off,off,5,4.140,709.681,3790,5703
