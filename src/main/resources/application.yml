@@ -55,3 +55,13 @@ management:
     metrics:
       export:
         step: 5s  # 스크랩 주기와 맞춤
+
+springdoc:
+  packages-to-scan: com.example.order_api_tuning
+  paths-to-match: /api/**
+  swagger-ui:
+    path: /swagger
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
