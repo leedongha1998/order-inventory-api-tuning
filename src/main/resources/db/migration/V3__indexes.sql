@@ -5,7 +5,7 @@ CREATE INDEX IF NOT EXISTS idx_product_active_partial ON product(id) WHERE statu
 
 -- orders
 CREATE INDEX IF NOT EXISTS idx_orders_status_created_at ON orders(status, created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_orders_user_created_at   ON orders(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_orders_member_created_at   ON orders(member_id, created_at DESC);
 
 -- order_item
 CREATE INDEX IF NOT EXISTS idx_order_item_order_id    ON order_item(order_id);

@@ -43,4 +43,12 @@ public class ApiResponse<T> {
         .meta(meta)
         .build();
   }
+
+  public static ApiResponse<Void> ok(ApiResponse.Meta meta) {
+    return ApiResponse.<Void>builder()
+        .success(true)
+        .code("OK")
+        .meta(meta)
+        .build();
+  }
 }
