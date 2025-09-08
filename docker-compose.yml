@@ -1,4 +1,51 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: api-tuning:latest
+    container_name: spring-app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/api-tuning
+      SPRING_DATASOURCE_USERNAME: dongha
+      SPRING_DATASOURCE_PASSWORD: dongha
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: ${HIKARI_MAX_POOL_SIZE:-20}
+      SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: ${HIKARI_MIN_IDLE:-10}
+      SERVER_ADDRESS: 0.0.0.0
+
+      # Redis 연결 설정 추가
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+    expose:
+      - "8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    networks:
+      - api-tuning-network
+
+  k6:
+    image: grafana/k6:latest
+    container_name: k6-runner
+    environment:
+      BASE_URL: http://app:8080
+    volumes:
+      - ./perf/k6/scenarios:/scripts:ro
+      - ./perf/k6/outputs:/outputs
+    depends_on:
+      app:
+        condition: service_healthy
+    networks:
+      - api-tuning-network
+
   postgres:
     image: postgres:16
     container_name: my-postgres
@@ -6,6 +53,9 @@ services:
       POSTGRES_USER: dongha
       POSTGRES_PASSWORD: dongha
       POSTGRES_DB: api-tuning
+      POSTGRES_SHARED_BUFFERS: 1GB
+      POSTGRES_EFFECTIVE_CACHE_SIZE: 3GB
+      POSTGRES_WORK_MEM: 16MB
     ports:
       - "5432:5432"
     volumes:
@@ -17,71 +67,96 @@ services:
       - "shared_preload_libraries=pg_stat_statements"
       - "-c"
       - "pg_stat_statements.track=all"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U dongha -d api-tuning" ]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    networks:
+      - api-tuning-network
 
   redis:
     image: redis:7.2-alpine
+    container_name: my-redis
     command: [ "redis-server", "--appendonly", "yes" ]
-    ports: [ "6379:6379" ]
+    ports:
+      - "6379:6379"
     volumes:
       - redisdata:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    networks:
+      - api-tuning-network
 
   prometheus:
     image: prom/prometheus:v2.54.1
+    container_name: my-prometheus
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      # (옵션) 녹화 룰 파일 추가 시
       - ./prometheus/rules.yml:/etc/prometheus/rules.yml:ro
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --web.enable-lifecycle
       - --storage.tsdb.retention.time=15d
-    ports: [ "9090:9090" ]
-    depends_on: [ postgres-exporter ]
+    ports:
+      - "9090:9090"
+    depends_on:
+      - postgres-exporter
+    networks:
+      - api-tuning-network
 
   grafana:
     image: grafana/grafana:11.2.0
-    ports: [ "3000:3000" ]
+    container_name: my-grafana
+    ports:
+      - "3000:3000"
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
     volumes:
-      - ./grafana/provisioning:/etc/grafana/provisioning  # (선택) 자동 프로비저닝
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - api-tuning-network
 
   postgres-exporter:
     image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: postgres-exporter
     environment:
       DATA_SOURCE_URI: "postgres:5432/api-tuning?sslmode=disable"
       DATA_SOURCE_USER: "dongha"
       DATA_SOURCE_PASS: "dongha"
-      # (선택) 커스텀 쿼리 파일로 pg_stat_statements 지표 확장
       PG_EXPORTER_EXTEND_QUERY_PATH: /config/queries.yaml
     volumes:
       - ./postgres-exporter/queries.yaml:/config/queries.yaml:ro
     depends_on:
-      - postgres
-    ports: [ "9187:9187" ]
+      postgres:
+        condition: service_healthy
+    ports:
+      - "9187:9187"
     command:
       - --collector.stat_statements
+    networks:
+      - api-tuning-network
 
-  # (선택) redis-exporter
   redis-exporter:
     image: oliver006/redis_exporter:v1.62.0
+    container_name: redis-exporter
     command: [ "--redis.addr=redis:6379" ]
     depends_on:
-      - redis
-    ports: [ "9121:9121" ]
-
-  # (선택) 컨테이너 리소스 관측
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.49.1
-    privileged: true
-    ports: [ "8082:8080" ]
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
+      redis:
+        condition: service_healthy
+    ports:
+      - "9121:9121"
+    networks:
+      - api-tuning-network
 
 volumes:
   pgdata:
   redisdata:
+
+networks:
+  api-tuning-network:
+    driver: bridge
