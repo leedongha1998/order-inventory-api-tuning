@@ -58,7 +58,8 @@ public class OrderService {
 
   @Transactional(readOnly = true)
   public OrderDetailDto getOrder(Long orderId) {
-    Order order = orderRepository.findById(orderId).orElseThrow();
+//    Order order = orderRepository.findById(orderId).orElseThrow();
+    Order order = orderRepository.findByIdFetchJoin(orderId).orElseThrow();
     return orderDetailMapper.toDto(order);
   }
 

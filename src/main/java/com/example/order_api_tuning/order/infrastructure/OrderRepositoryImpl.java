@@ -29,4 +29,9 @@ public class OrderRepositoryImpl implements OrderRepository {
   public Page<Order> findAllByMemberId(Member member, Pageable pageable) {
     return jpaOrderRepository.findAllByMember(member,pageable);
   }
+
+  @Override
+  public Optional<Order> findByIdFetchJoin(Long orderId) {
+    return jpaOrderRepository.findByIdFetchJoin(orderId);
+  }
 }
