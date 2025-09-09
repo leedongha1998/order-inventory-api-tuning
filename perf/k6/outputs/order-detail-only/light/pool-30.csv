@@ -1,0 +1,2 @@
+api,p50_ms,p95_ms,p99_ms,errors,200,404,4xx_else,5xx,other
+order_detail,5.254475,10.031413,16.902822,0,12001,0,0,0,0

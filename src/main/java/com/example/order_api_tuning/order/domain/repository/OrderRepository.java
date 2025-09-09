@@ -13,4 +13,6 @@ public interface OrderRepository {
   Optional<Order> findById(Long orderId);
 
   Page<Order> findAllByMemberId(Member member, Pageable pageable);
+
+  Optional<Order> findByIdFetchJoin(Long orderId);
 }

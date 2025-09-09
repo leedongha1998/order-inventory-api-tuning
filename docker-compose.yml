@@ -6,7 +6,7 @@ services:
     image: api-tuning:latest
     container_name: spring-app
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/api-tuning
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bench_idx_on
       SPRING_DATASOURCE_USERNAME: dongha
       SPRING_DATASOURCE_PASSWORD: dongha
       SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: ${HIKARI_MAX_POOL_SIZE:-20}
