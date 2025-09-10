@@ -9,7 +9,8 @@ public record OrderReqDto(
 
   public record ItemSpec(
       Long productId,
-      Integer quantity
+      Integer quantity,
+      Long couponId
   ) {
 
   }

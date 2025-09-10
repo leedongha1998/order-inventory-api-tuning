@@ -77,4 +77,8 @@ public class Order {
   public void cancelOrder() {
     this.status = OrderStatus.CANCELED;
   }
+
+  public void  completeOrder(){
+    this.status = OrderStatus.PAID;
+  }
 }
