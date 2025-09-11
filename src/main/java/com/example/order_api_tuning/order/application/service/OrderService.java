@@ -28,12 +28,15 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -132,9 +135,44 @@ public class OrderService {
     orderRepository.save(order);
   }
 
+  @Transactional(readOnly = true)
   public Page<OrderDetailDto> getMyOrders(Long memberId, Pageable pageable) {
     Member member = memberRepository.findById(memberId).orElseThrow();
     Page<Order> page = orderRepository.findAllByMemberId(member, pageable);
     return page.map(orderDetailMapper::toDto);
+  }
+
+  @Transactional(readOnly = true)
+  public Page<OrderDetailDto> getMyOrdersWithFetchJoin(Long memberId, Pageable pageable) {
+    Page<Long> idPage = orderRepository.findOrderIdsByMemberId(memberId, pageable);
+    if (idPage.isEmpty()) return Page.empty(pageable);
+
+    List<Long> ids = idPage.getContent();
+    List<Order> orders = orderRepository.findWithItemsByIdIn(ids);
+
+    // ID 순서 유지
+    Map<Long, Integer> orderIndex = new HashMap<>();
+    for (int i = 0; i < ids.size(); i++) orderIndex.put(ids.get(i), i);
+    orders.sort(Comparator.comparingInt(o -> orderIndex.getOrDefault(o.getId(), Integer.MAX_VALUE)));
+
+    List<OrderDetailDto> dtos = orders.stream()
+        .map(orderDetailMapper::toDto)
+        .toList();
+
+    return new PageImpl<>(dtos, pageable, idPage.getTotalElements());
+  }
+
+  @Transactional(readOnly = true)
+  public Page<OrderDetailDto> getMyOrdersWithEntityGraph(Long memberId, Pageable pageable){
+    Page<Order> page = orderRepository.findMyOrdersWithEntityGraph(memberId,pageable);
+
+    if (page.isEmpty()) return Page.empty(pageable);
+
+    List<OrderDetailDto> dtos = page.getContent().stream()
+        // 여기서 order.getItems() 접근해도 추가 쿼리 없음(이미 적재/배치)
+        .map(orderDetailMapper::toDto)
+        .toList();
+
+    return new PageImpl<>(dtos, pageable, page.getTotalElements());
   }
 }

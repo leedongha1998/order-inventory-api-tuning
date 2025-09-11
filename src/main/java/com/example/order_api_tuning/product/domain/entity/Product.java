@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import lombok.Getter;
+import org.hibernate.annotations.BatchSize;
 
 @Entity
 @Table(name = "product", indexes = {
@@ -19,6 +20,7 @@ import lombok.Getter;
     @Index(name = "idx_product_name", columnList = "name")
 })
 @Getter
+@BatchSize(size = 256)
 public class Product {
 
   @Id
