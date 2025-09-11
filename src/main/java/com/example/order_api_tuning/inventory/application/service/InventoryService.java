@@ -23,7 +23,7 @@ public class InventoryService {
   @Transactional
   public void updateInventory(Long productId, InventoryReqDto request) {
     Inventory inventory = inventoryRepository.findByProductId(productId).orElseThrow();
-    inventory.updateQuantity(request);
+    inventory.updateQuantity(request.quantity());
     inventoryRepository.save(inventory);
   }
 }

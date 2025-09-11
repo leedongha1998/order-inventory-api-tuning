@@ -3,6 +3,7 @@ package com.example.order_api_tuning.order.infrastructure;
 import com.example.order_api_tuning.member.domain.entity.Member;
 import com.example.order_api_tuning.order.domain.entity.Order;
 import com.example.order_api_tuning.order.domain.repository.OrderRepository;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,5 +34,20 @@ public class OrderRepositoryImpl implements OrderRepository {
   @Override
   public Optional<Order> findByIdFetchJoin(Long orderId) {
     return jpaOrderRepository.findByIdFetchJoin(orderId);
+  }
+
+  @Override
+  public Page<Long> findOrderIdsByMemberId(Long memberId, Pageable pageable) {
+    return jpaOrderRepository.findOrderIdsByMemberId(memberId, pageable);
+  }
+
+  @Override
+  public List<Order> findWithItemsByIdIn(List<Long> ids) {
+    return jpaOrderRepository.findWithItemsByIdIn(ids);
+  }
+
+  @Override
+  public Page<Order> findMyOrdersWithEntityGraph(Long memberId, Pageable pageable) {
+    return jpaOrderRepository.findMyOrdersWithEntityGraph(memberId,pageable);
   }
 }

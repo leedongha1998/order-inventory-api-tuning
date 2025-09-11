@@ -35,7 +35,11 @@ public class Inventory {
   @Column(name = "updated_at", nullable = false, columnDefinition = "timestamptz")
   private OffsetDateTime updatedAt;
 
-  public void updateQuantity(InventoryReqDto request) {
-    this.quantity = request.quantity();
+  public void updateQuantity(Integer quantity) {
+    this.quantity -= quantity;
+  }
+
+  public Long getProductId(){
+    return product != null ? product.getId() : null;
   }
 }

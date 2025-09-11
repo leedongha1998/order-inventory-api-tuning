@@ -13,6 +13,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
@@ -24,12 +26,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 
 @Entity
 @Table(name = "orders", indexes = @Index(name = "idx_orders_status_created_at", columnList = "status, created_at DESC"))
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NamedEntityGraph(
+    name = "Order.withMember",
+    attributeNodes = {@NamedAttributeNode("member")}
+)
+@BatchSize(size = 256)
 public class Order {
 
   @Id
@@ -55,6 +63,7 @@ public class Order {
   private OffsetDateTime updatedAt;
 
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+  @BatchSize(size = 256)
   private List<OrderItem> items = new ArrayList<>();
 
   private Order(Member member){
@@ -76,5 +85,9 @@ public class Order {
 
   public void cancelOrder() {
     this.status = OrderStatus.CANCELED;
+  }
+
+  public void  completeOrder(){
+    this.status = OrderStatus.PAID;
   }
 }

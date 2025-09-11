@@ -1,0 +1,46 @@
+{
+  "testInfo": {
+    "poolSize": "10",
+    "threads": "200",
+    "baseUrl": "http://app:8080",
+    "duration": "3m",
+    "timestamp": "2025-09-10T04:04:02.120Z",
+    "thresholdsEnabled": false
+  },
+  "overall": {
+    "totalRequests": 168670,
+    "requestsPerSecond": 793.667920914018,
+    "failureRate": 0.0011857473172466946,
+    "responseTime": {
+      "avg": 540.8070570794628,
+      "min": 2.198308,
+      "med": 17.745069,
+      "max": 4893.604077,
+      "p95": 2164.609817549998,
+      "p99": 3046.7168944999985
+    }
+  },
+  "apis": {
+    "orderDetail": {
+      "count": 0,
+      "errors": 2,
+      "responseTime": {
+        "avg": 541.7162823664838,
+        "p50": 17.837883,
+        "p95": 2165.1260687999998,
+        "p99": 3047.79492284
+      }
+    }
+  },
+  "status": {
+    "s200": 168371,
+    "s404": 0,
+    "s4xx": 0,
+    "s5xx": 2,
+    "other": 0
+  },
+  "checks": {
+    "passes": 168371,
+    "fails": 2
+  }
+}

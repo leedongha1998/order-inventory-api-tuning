@@ -53,7 +53,9 @@ public class OrderController {
       @PathVariable Long memberId,
       @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC) Pageable pageable
   ) {
-    Page<OrderDetailDto> page = orderService.getMyOrders(memberId, pageable);
+//    Page<OrderDetailDto> page = orderService.getMyOrders(memberId, pageable);
+//    Page<OrderDetailDto> page = orderService.getMyOrdersWithFetchJoin(memberId, pageable);
+    Page<OrderDetailDto> page = orderService.getMyOrdersWithEntityGraph(memberId, pageable);
     ApiResponse.Meta meta = metaFactory.meta(pageable, page);
     return ResponseEntity.ok(ApiResponse.ok(page.getContent(), meta));
   }

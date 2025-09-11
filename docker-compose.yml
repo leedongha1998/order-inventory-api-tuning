@@ -52,7 +52,7 @@ services:
     environment:
       POSTGRES_USER: dongha
       POSTGRES_PASSWORD: dongha
-      POSTGRES_DB: api-tuning
+      POSTGRES_DB: bench_idx_on
       POSTGRES_SHARED_BUFFERS: 1GB
       POSTGRES_EFFECTIVE_CACHE_SIZE: 3GB
       POSTGRES_WORK_MEM: 16MB
@@ -150,6 +150,22 @@ services:
         condition: service_healthy
     ports:
       - "9121:9121"
+    networks:
+      - api-tuning-network
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.2
+    container_name: cadvisor
+    privileged: true
+    devices:
+      - /dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    restart: unless-stopped
     networks:
       - api-tuning-network
 
