@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/bench_idx_on
+    url: jdbc:postgresql://localhost:5432/bench_idx_on?reWriteBatchedInserts=true
     username: dongha
     password: dongha
   flyway:

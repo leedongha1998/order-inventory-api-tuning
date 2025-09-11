@@ -1,0 +1,45 @@
+{
+  "testInfo": {
+    "strategy": "SEQUENCE",
+    "poolSize": 20,
+    "batchMode": "on",
+    "duration": "3m",
+    "rateRps": 500,
+    "itemsRange": [
+      5,
+      12
+    ],
+    "timestamp": "2025-09-11T16:06:07.656Z"
+  },
+  "performance": {
+    "totalRequests": 85424,
+    "requestsPerSecond": 392.8659928057186,
+    "failureRate": 99.99180558156958,
+    "responseTime": {
+      "avg": 2132.348054754759,
+      "min": 3.634992,
+      "med": 127.191151,
+      "max": 11491.603141,
+      "p50": 127.191151,
+      "p90": 6419.558810299997,
+      "p95": 7506.177869399998,
+      "p99": 9463.060723970006
+    },
+    "orderCreate": {
+      "duration": {
+        "avg": 2132.348054754759,
+        "p50": 127.191151,
+        "p95": 7506.177869399998,
+        "p99": 9463.060723970006
+      },
+      "success": 0,
+      "errors": 85424
+    }
+  },
+  "statusCodes": {
+    "2xx": 7,
+    "4xx": 84021,
+    "5xx": 1396,
+    "other": 0
+  }
+}

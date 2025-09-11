@@ -1,0 +1,16 @@
+﻿{
+    "timestamp_utc":  "2025-09-11T16:06:10.4917178Z",
+    "hikari_active":  2,
+    "hikari_idle":  18,
+    "hikari_pending":  0,
+    "hikari_max":  20,
+    "jvm_heap_used_mb":  250.40778350830078,
+    "jvm_heap_max_mb":  1949.9999980926514,
+    "gc_pause_ms_per_s":  4.6805163913985872,
+    "gc_pause_events_per_s":  0.69056799217356268,
+    "pg_active_connections":  3,
+    "pg_avg_query_time_ms":  0,
+    "pg_tps":  5.9271478717894617,
+    "redis_used_memory_mb":  1.1050949096679688,
+    "redis_hit_rate":  0
+}

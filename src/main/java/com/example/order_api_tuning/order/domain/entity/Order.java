@@ -16,6 +16,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -33,14 +34,16 @@ import org.hibernate.annotations.BatchSize;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@NamedEntityGraph(
-    name = "Order.withMember",
-    attributeNodes = {@NamedAttributeNode("member")}
-)
-@BatchSize(size = 256)
+//@NamedEntityGraph(
+//    name = "Order.withMember",
+//    attributeNodes = {@NamedAttributeNode("member")}
+//)
+//@BatchSize(size = 256)
 public class Order {
 
   @Id
+//  @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "orders_seq_gen")
+//  @SequenceGenerator(name = "orders_seq_gen", sequenceName = "orders_seq", allocationSize = 100)
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
