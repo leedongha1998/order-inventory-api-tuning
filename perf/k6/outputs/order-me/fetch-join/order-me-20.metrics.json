@@ -1,0 +1,53 @@
+﻿{
+    "value":  [
+                  {
+                      "container":  "spring-app",
+                      "samples":  47,
+                      "window_seconds":  230,
+                      "cpu_percent_avg":  369.75,
+                      "cpu_percent_p95":  562.75,
+                      "cpu_percent_max":  608.96,
+                      "mem_percent_avg":  9.68,
+                      "mem_percent_max":  10.56,
+                      "mem_used_peak_bytes":  863397478,
+                      "mem_limit_bytes":  8173322764,
+                      "block_io_total_read_bytes":  41943,
+                      "block_io_total_write_bytes":  184218,
+                      "block_io_read_bps":  182,
+                      "block_io_write_bps":  801
+                  },
+                  {
+                      "container":  "my-postgres",
+                      "samples":  47,
+                      "window_seconds":  230,
+                      "cpu_percent_avg":  97.46,
+                      "cpu_percent_p95":  127.41,
+                      "cpu_percent_max":  131.46,
+                      "mem_percent_avg":  1.19,
+                      "mem_percent_max":  1.25,
+                      "mem_used_peak_bytes":  102435389,
+                      "mem_limit_bytes":  8173322764,
+                      "block_io_total_read_bytes":  0,
+                      "block_io_total_write_bytes":  0,
+                      "block_io_read_bps":  0,
+                      "block_io_write_bps":  0
+                  },
+                  {
+                      "container":  "my-redis",
+                      "samples":  47,
+                      "window_seconds":  230,
+                      "cpu_percent_avg":  0.56,
+                      "cpu_percent_p95":  1.58,
+                      "cpu_percent_max":  1.82,
+                      "mem_percent_avg":  0.08,
+                      "mem_percent_max":  0.08,
+                      "mem_used_peak_bytes":  6791627,
+                      "mem_limit_bytes":  8173322764,
+                      "block_io_total_read_bytes":  0,
+                      "block_io_total_write_bytes":  0,
+                      "block_io_read_bps":  0,
+                      "block_io_write_bps":  0
+                  }
+              ],
+    "Count":  3
+}

@@ -32,6 +32,11 @@ spring:
         show_sql: true
         format_sql: true
         generate_statistics: true
+        jdbc:
+          batch_size: 50
+          batch_versioned_data: true
+        order_inserts: true
+        order_updates: true
   flyway:
     enabled: true
     baseline-on-migrate: true

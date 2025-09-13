@@ -1,0 +1,50 @@
+﻿[
+    {
+        "container":  "spring-app",
+        "samples":  44,
+        "window_seconds":  217,
+        "cpu_percent_avg":  359.03,
+        "cpu_percent_p95":  553.24,
+        "cpu_percent_max":  648.46,
+        "mem_percent_avg":  11.38,
+        "mem_percent_max":  12.79,
+        "mem_used_peak_bytes":  1045535130,
+        "mem_limit_bytes":  8173322764,
+        "block_io_total_read_bytes":  0,
+        "block_io_total_write_bytes":  209408,
+        "block_io_read_bps":  0,
+        "block_io_write_bps":  965
+    },
+    {
+        "container":  "my-postgres",
+        "samples":  44,
+        "window_seconds":  217,
+        "cpu_percent_avg":  71.59,
+        "cpu_percent_p95":  104.05,
+        "cpu_percent_max":  108.65,
+        "mem_percent_avg":  1.66,
+        "mem_percent_max":  1.73,
+        "mem_used_peak_bytes":  141243187,
+        "mem_limit_bytes":  8173322764,
+        "block_io_total_read_bytes":  0,
+        "block_io_total_write_bytes":  0,
+        "block_io_read_bps":  0,
+        "block_io_write_bps":  0
+    },
+    {
+        "container":  "my-redis",
+        "samples":  44,
+        "window_seconds":  217,
+        "cpu_percent_avg":  0.69,
+        "cpu_percent_p95":  2,
+        "cpu_percent_max":  4.25,
+        "mem_percent_avg":  0.08,
+        "mem_percent_max":  0.08,
+        "mem_used_peak_bytes":  6877610,
+        "mem_limit_bytes":  8173322764,
+        "block_io_total_read_bytes":  0,
+        "block_io_total_write_bytes":  0,
+        "block_io_read_bps":  0,
+        "block_io_write_bps":  0
+    }
+]
