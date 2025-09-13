@@ -5,7 +5,7 @@ import static com.example.order_api_tuning.product.domain.entity.QProduct.produc
 import com.example.order_api_tuning.product.domain.entity.Product;
 import com.example.order_api_tuning.product.domain.entity.QProduct;
 import com.example.order_api_tuning.product.domain.repository.ProductRepository;
-import com.example.order_api_tuning.product.presentation.dto.ProductListDto;
+import com.example.order_api_tuning.inventory.presentation.dto.ProductInventoryDto;
 import com.example.order_api_tuning.product.presentation.dto.ProductSearchCondition;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
@@ -45,7 +45,7 @@ public class ProductRepositoryImpl implements ProductRepository {
   }
 
   @Override
-  public Page<ProductListDto> searchProducts(ProductSearchCondition c, Pageable pageable) {
+  public Page<ProductInventoryDto> searchProducts(ProductSearchCondition c, Pageable pageable) {
     QProduct p = product;
 
     // 0) 경계값 정리: 가격 역전 스왑
@@ -65,8 +65,8 @@ public class ProductRepositoryImpl implements ProductRepository {
     OrderSpecifier<?>[] orders = toOrderSpecifiers(pageable.getSort(), p);
 
     // 3) content (필요한 컬럼만 DTO로)
-    List<ProductListDto> content = queryFactory
-        .select(Projections.constructor(ProductListDto.class,
+    List<ProductInventoryDto> content = queryFactory
+        .select(Projections.constructor(ProductInventoryDto.class,
             p.id, p.name, p.price))
         .from(p)
         .where(where)

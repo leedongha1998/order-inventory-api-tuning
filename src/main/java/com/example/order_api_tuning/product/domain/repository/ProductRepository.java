@@ -1,7 +1,7 @@
 package com.example.order_api_tuning.product.domain.repository;
 
 import com.example.order_api_tuning.product.domain.entity.Product;
-import com.example.order_api_tuning.product.presentation.dto.ProductListDto;
+import com.example.order_api_tuning.inventory.presentation.dto.ProductInventoryDto;
 import com.example.order_api_tuning.product.presentation.dto.ProductSearchCondition;
 import java.util.List;
 import java.util.Optional;
@@ -16,5 +16,5 @@ public interface ProductRepository {
 
   Page<Product> findAll(Pageable pageable);
 
-  Page<ProductListDto> searchProducts(ProductSearchCondition condition, Pageable pageable);
+  Page<ProductInventoryDto> searchProducts(ProductSearchCondition condition, Pageable pageable);
 }

@@ -2,10 +2,13 @@ package com.example.order_api_tuning.inventory.infrastructure;
 
 import com.example.order_api_tuning.inventory.domain.entity.Inventory;
 import com.example.order_api_tuning.inventory.domain.repository.InventoryRepository;
+import com.example.order_api_tuning.inventory.presentation.dto.ProductInventoryDto;
 import com.example.order_api_tuning.product.domain.entity.Product;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -22,6 +25,11 @@ public class InventoryRepositoryImpl implements InventoryRepository {
   @Override
   public List<Inventory> findAllByProductIdInForUpdate(List<Long> productIds) {
     return jpaInventoryRepository.findAllByProductIds(productIds);
+  }
+
+  @Override
+  public Page<ProductInventoryDto> findAllProducts(Pageable pageable) {
+    return jpaInventoryRepository.findAllProductsJpql(pageable);
   }
 
   @Override

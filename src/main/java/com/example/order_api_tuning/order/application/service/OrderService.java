@@ -8,17 +8,18 @@ import com.example.order_api_tuning.inventory.domain.entity.Inventory;
 import com.example.order_api_tuning.inventory.domain.repository.InventoryRepository;
 import com.example.order_api_tuning.member.domain.entity.BenefitType;
 import com.example.order_api_tuning.member.domain.entity.Coupon;
-import com.example.order_api_tuning.member.domain.entity.CouponStatus;
 import com.example.order_api_tuning.member.domain.entity.CouponTemplate;
 import com.example.order_api_tuning.member.domain.entity.Member;
 import com.example.order_api_tuning.member.domain.repository.CouponRepository;
 import com.example.order_api_tuning.member.domain.repository.MemberRepository;
-import com.example.order_api_tuning.order.presentation.dto.OrderDetailDto;
-import com.example.order_api_tuning.order.presentation.dto.OrderReqDto;
-import com.example.order_api_tuning.order.presentation.dto.OrderReqDto.ItemSpec;
 import com.example.order_api_tuning.order.domain.entity.Order;
 import com.example.order_api_tuning.order.domain.entity.OrderItem;
 import com.example.order_api_tuning.order.domain.repository.OrderRepository;
+import com.example.order_api_tuning.order.domain.repository.OrderWriteRepo;
+import com.example.order_api_tuning.order.presentation.dto.OrderDetailDto;
+import com.example.order_api_tuning.order.presentation.dto.OrderReqDto;
+import com.example.order_api_tuning.order.presentation.dto.OrderReqDto.ItemSpec;
+import com.example.order_api_tuning.order.presentation.dto.PartitionTestDto;
 import com.example.order_api_tuning.order.presentation.mapper.OrderDetailMapper;
 import com.example.order_api_tuning.payment.domain.entity.Payment;
 import com.example.order_api_tuning.payment.domain.repository.PaymentRepository;
@@ -27,7 +28,7 @@ import com.example.order_api_tuning.product.domain.repository.ProductRepository;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +53,7 @@ public class OrderService {
   private final OrderDetailMapper orderDetailMapper;
   private final PaymentRepository paymentRepository;
   private final CouponRepository couponRepository;
+  private final OrderWriteRepo orderWriteRepo;
 
   @Transactional
   public void createOrder(OrderReqDto request) {
@@ -174,5 +176,15 @@ public class OrderService {
         .toList();
 
     return new PageImpl<>(dtos, pageable, page.getTotalElements());
+  }
+
+  public void createOrderNotPartition(PartitionTestDto dto) {
+    orderWriteRepo.insertNp(dto.memberId(), BigDecimal.valueOf(dto.price()),
+        LocalDateTime.parse(dto.createdAt()));
+  }
+
+  public void createOrderPartition(PartitionTestDto dto) {
+    orderWriteRepo.insertPt(dto.memberId(), BigDecimal.valueOf(dto.price()),
+        LocalDateTime.parse(dto.createdAt()));
   }
 }
