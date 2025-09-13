@@ -1,6 +1,5 @@
 package com.example.order_api_tuning.inventory.domain.entity;
 
-import com.example.order_api_tuning.inventory.presentation.dto.InventoryReqDto;
 import com.example.order_api_tuning.product.domain.entity.Product;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
