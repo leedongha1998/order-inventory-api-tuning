@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
@@ -35,6 +36,23 @@ public class OrderController {
   @PostMapping()
   public ResponseEntity<ApiResponse<Void>> createOrder(@RequestBody OrderReqDto request) {
     orderService.createOrder(request);
+    ApiResponse.Meta meta = metaFactory.meta(null, null);
+    return ResponseEntity.ok(ApiResponse.ok(meta));
+  }
+
+  @PostMapping("/pessimistic")
+  public ResponseEntity<ApiResponse<Void>> createOrderPessimistic(@RequestBody OrderReqDto request)
+      throws NotFoundException {
+    orderService.createOrderPessimistic(request);
+    ApiResponse.Meta meta = metaFactory.meta(null, null);
+    return ResponseEntity.ok(ApiResponse.ok(meta));
+  }
+
+
+  @PostMapping("/optimistic")
+  public ResponseEntity<ApiResponse<Void>> createOrderOptimistic(@RequestBody OrderReqDto request)
+      throws NotFoundException {
+    orderService.createOrderOptimistic(request);
     ApiResponse.Meta meta = metaFactory.meta(null, null);
     return ResponseEntity.ok(ApiResponse.ok(meta));
   }

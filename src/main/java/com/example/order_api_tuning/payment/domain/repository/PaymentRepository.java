@@ -8,4 +8,6 @@ public interface PaymentRepository {
   void save(Payment payment);
 
   Optional<Payment> findById(Long paymentId);
+
+  Optional<Payment> findByOrderId(Long orderId);
 }

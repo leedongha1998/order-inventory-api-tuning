@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import lombok.AccessLevel;
@@ -58,6 +59,10 @@ public class OrderItem {
 
   @Column(name = "created_at", columnDefinition = "timestamptz", nullable = false)
   private OffsetDateTime createdAt;
+
+  @Version
+  @Column(nullable=false)
+  private Long version;
 
   public static OrderItem create(Product product, int quantity){
     return OrderItem.builder()

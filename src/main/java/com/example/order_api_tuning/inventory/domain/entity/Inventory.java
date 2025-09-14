@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.Version;
 import java.time.OffsetDateTime;
 import lombok.Getter;
 
@@ -34,11 +35,19 @@ public class Inventory {
   @Column(name = "updated_at", nullable = false, columnDefinition = "timestamptz")
   private OffsetDateTime updatedAt;
 
-  public void updateQuantity(Integer quantity) {
+  @Version
+  @Column(nullable=false)
+  private Long version;
+
+  public void minusQuantity(Integer quantity) {
     this.quantity -= quantity;
   }
 
   public Long getProductId(){
     return product != null ? product.getId() : null;
+  }
+
+  public void plusQuantity(Integer quantity) {
+    this.quantity += quantity;
   }
 }

@@ -18,6 +18,7 @@ import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -69,6 +70,10 @@ public class Order {
   @BatchSize(size = 256)
   private List<OrderItem> items = new ArrayList<>();
 
+  @Version
+  @Column(nullable=false)
+  private Long version;
+
   private Order(Member member){
     this.member = member;
     this.totalAmount = BigDecimal.ZERO;
@@ -92,5 +97,13 @@ public class Order {
 
   public void  completeOrder(){
     this.status = OrderStatus.PAID;
+  }
+
+  public void markPendingPayment() {
+    this.status = OrderStatus.PENDING;
+  }
+
+  public void markFailed() {
+    this.status = OrderStatus.FAILED;
   }
 }

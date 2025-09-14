@@ -64,4 +64,12 @@ public class Payment {
   public void refund() {
     this.status = PaymentStatus.CANCELLED;
   }
+
+  public void markPaid() {
+    this.status = PaymentStatus.PAID;
+  }
+
+  public void markFailed() {
+    this.status = PaymentStatus.FAILED;
+  }
 }

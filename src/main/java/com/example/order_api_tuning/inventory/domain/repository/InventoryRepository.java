@@ -2,6 +2,7 @@ package com.example.order_api_tuning.inventory.domain.repository;
 
 import com.example.order_api_tuning.inventory.domain.entity.Inventory;
 import com.example.order_api_tuning.inventory.presentation.dto.ProductInventoryDto;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -15,4 +16,10 @@ public interface InventoryRepository{
   List<Inventory> findAllByProductIdInForUpdate(List<Long> productIds);
 
   Page<ProductInventoryDto> findAllProducts(Pageable pageable);
+
+  Collection<Inventory> findAllByProductIdInForUpdateNowait(List<Long> productIds);
+
+  Optional<Inventory> lockByProductIdNowait(Long id);
+
+  List<Inventory> findByProductIdIn(List<Long> productIds);
 }

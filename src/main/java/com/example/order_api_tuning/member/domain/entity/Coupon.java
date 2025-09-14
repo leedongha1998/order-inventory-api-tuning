@@ -1,5 +1,6 @@
 package com.example.order_api_tuning.member.domain.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -10,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Version;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Getter;
@@ -32,6 +34,10 @@ public class Coupon {
   private CouponStatus status;
   private LocalDate expiryDate;
   private LocalDateTime issuedDate;
+
+  @Version
+  @Column(nullable=false)
+  private Long version;
 
   public void useCoupon(){
     this.status  = CouponStatus.USED;

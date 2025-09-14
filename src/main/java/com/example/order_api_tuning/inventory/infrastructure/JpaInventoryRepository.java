@@ -3,12 +3,17 @@ package com.example.order_api_tuning.inventory.infrastructure;
 import com.example.order_api_tuning.inventory.domain.entity.Inventory;
 import com.example.order_api_tuning.inventory.presentation.dto.ProductInventoryDto;
 import com.example.order_api_tuning.product.domain.entity.Product;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.QueryHint;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 
 public interface JpaInventoryRepository extends JpaRepository<Inventory, Long> {
 
@@ -45,4 +50,22 @@ public interface JpaInventoryRepository extends JpaRepository<Inventory, Long> {
       countQuery = "select count(*) from inventory i",
       nativeQuery = true)
   Page<ProductInventoryDto> findAllProductsNative(Pageable pageable);
+
+  @Lock(LockModeType.PESSIMISTIC_WRITE)
+  @Query("""
+         select i
+         from Inventory i
+         where i.product.id in :ids
+         order by i.product.id asc
+         """)
+  @QueryHints(@QueryHint(name = "jakarta.persistence.lock.timeout", value = "0")) // NOWAIT
+  List<Inventory> findAllByProductIdInForUpdateNowait(List<Long> ids);
+
+  @Lock(LockModeType.PESSIMISTIC_WRITE)
+  @Query("select i from Inventory i where i.product.id = :id")
+  Optional<Inventory> lockByProductIdNowait(Long id);
+
+  @Lock(LockModeType.OPTIMISTIC)
+  @Query("select i from Inventory i where i.product.id in :ids")
+  List<Inventory> findByProductIdIn(List<Long> ids);
 }

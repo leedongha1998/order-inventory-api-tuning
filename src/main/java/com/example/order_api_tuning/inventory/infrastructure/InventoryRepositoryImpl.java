@@ -4,6 +4,7 @@ import com.example.order_api_tuning.inventory.domain.entity.Inventory;
 import com.example.order_api_tuning.inventory.domain.repository.InventoryRepository;
 import com.example.order_api_tuning.inventory.presentation.dto.ProductInventoryDto;
 import com.example.order_api_tuning.product.domain.entity.Product;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,21 @@ public class InventoryRepositoryImpl implements InventoryRepository {
   @Override
   public Page<ProductInventoryDto> findAllProducts(Pageable pageable) {
     return jpaInventoryRepository.findAllProductsJpql(pageable);
+  }
+
+  @Override
+  public Collection<Inventory> findAllByProductIdInForUpdateNowait(List<Long> productIds) {
+    return jpaInventoryRepository.findAllByProductIdInForUpdateNowait(productIds);
+  }
+
+  @Override
+  public Optional<Inventory> lockByProductIdNowait(Long id) {
+    return jpaInventoryRepository.lockByProductIdNowait(id);
+  }
+
+  @Override
+  public List<Inventory> findByProductIdIn(List<Long> productIds) {
+    return jpaInventoryRepository.findByProductIdIn(productIds);
   }
 
   @Override
