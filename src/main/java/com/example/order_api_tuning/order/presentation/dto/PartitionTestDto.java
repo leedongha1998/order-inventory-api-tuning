@@ -6,8 +6,8 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * @deprecated 실험 API 전용 DTO는 {@code order.presentation.experiment.dto.PartitionWriteReqDto} 사용 권장.
- */
-@Deprecated
+ *
+ /
 public record PartitionTestDto(
     @NotNull Long memberId,
     @NotNull @Min(0) Integer price,
