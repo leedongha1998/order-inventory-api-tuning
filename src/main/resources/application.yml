@@ -1,7 +1,7 @@
 server:
   tomcat:
     threads:
-      max: ${SERVER_TOMCAT_THREADS_MAX:200}
+      max: ${SERVER_TOMCAT_THREADS_MAX:100}
       min-spare: 20
     accept-count: 200
     connection-timeout: 5s
@@ -37,6 +37,7 @@ spring:
           batch_versioned_data: true
         order_inserts: true
         order_updates: true
+        default_batch_fetch_size: ${HIBERNATE_DEFAULT_BATCH_FETCH_SIZE:256}
   flyway:
     enabled: true
     baseline-on-migrate: true
