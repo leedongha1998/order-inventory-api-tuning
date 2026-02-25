@@ -2,26 +2,23 @@ package com.example.order_api_tuning.order.presentation;
 
 import com.example.order_api_tuning.common.response.ApiMetaFactory;
 import com.example.order_api_tuning.common.response.ApiResponse;
+import com.example.order_api_tuning.order.application.service.OrderService;
 import com.example.order_api_tuning.order.presentation.dto.OrderDetailDto;
 import com.example.order_api_tuning.order.presentation.dto.OrderReqDto;
-import com.example.order_api_tuning.order.application.service.OrderService;
-import com.example.order_api_tuning.order.presentation.dto.PartitionTestDto;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,22 +30,11 @@ public class OrderController {
   private final ApiMetaFactory metaFactory;
 
   @PostMapping()
-  public ResponseEntity<ApiResponse<Void>> createOrder(@RequestBody OrderReqDto request) {
-    orderService.createOrder(request);
-    ApiResponse.Meta meta = metaFactory.meta(null, null);
-    return ResponseEntity.ok(ApiResponse.ok(meta));
-  }
-
-  @PostMapping("/np")
-  public ResponseEntity<ApiResponse<Void>> createOrderNotPartition(@RequestBody PartitionTestDto dto) {
-    orderService.createOrderNotPartition(dto);
-    ApiResponse.Meta meta = metaFactory.meta(null, null);
-    return ResponseEntity.ok(ApiResponse.ok(meta));
-  }
-
-  @PostMapping("/pt")
-  public ResponseEntity<ApiResponse<Void>> createOrderPartition(@RequestBody PartitionTestDto dto) {
-    orderService.createOrderPartition(dto);
+  public ResponseEntity<ApiResponse<Void>> createOrder(
+      @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
+      @RequestBody @Valid OrderReqDto request
+  ) {
+    orderService.createOrder(request, idempotencyKey);
     ApiResponse.Meta meta = metaFactory.meta(null, null);
     return ResponseEntity.ok(ApiResponse.ok(meta));
   }
@@ -72,8 +58,6 @@ public class OrderController {
       @PathVariable Long memberId,
       @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC) Pageable pageable
   ) {
-//    Page<OrderDetailDto> page = orderService.getMyOrders(memberId, pageable);
-//    Page<OrderDetailDto> page = orderService.getMyOrdersWithFetchJoin(memberId, pageable);
     Page<OrderDetailDto> page = orderService.getMyOrdersWithEntityGraph(memberId, pageable);
     ApiResponse.Meta meta = metaFactory.meta(pageable, page);
     return ResponseEntity.ok(ApiResponse.ok(page.getContent(), meta));

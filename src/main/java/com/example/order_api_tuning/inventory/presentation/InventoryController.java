@@ -2,9 +2,10 @@ package com.example.order_api_tuning.inventory.presentation;
 
 import com.example.order_api_tuning.common.response.ApiMetaFactory;
 import com.example.order_api_tuning.common.response.ApiResponse;
+import com.example.order_api_tuning.inventory.application.service.InventoryService;
 import com.example.order_api_tuning.inventory.presentation.dto.InventoryReqDto;
 import com.example.order_api_tuning.inventory.presentation.dto.InventoryResDto;
-import com.example.order_api_tuning.inventory.application.service.InventoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +32,7 @@ public class InventoryController {
   }
 
   @PatchMapping("/{productId}")
-  public ResponseEntity<ApiResponse<Void>> updateInventoryByProductId(@PathVariable Long productId, @RequestBody InventoryReqDto request){
+  public ResponseEntity<ApiResponse<Void>> updateInventoryByProductId(@PathVariable Long productId, @RequestBody @Valid InventoryReqDto request){
     inventoryService.updateInventory(productId,request);
     ApiResponse.Meta meta = metaFactory.meta(null, null);
     return ResponseEntity.ok(ApiResponse.ok(meta));
