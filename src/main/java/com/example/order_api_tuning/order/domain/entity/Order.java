@@ -34,11 +34,10 @@ import org.hibernate.annotations.BatchSize;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-//@NamedEntityGraph(
-//    name = "Order.withMember",
-//    attributeNodes = {@NamedAttributeNode("member")}
-//)
-//@BatchSize(size = 256)
+@NamedEntityGraph(
+    name = "Order.withMember",
+    attributeNodes = {@NamedAttributeNode("member")}
+)
 public class Order {
 
   @Id

@@ -8,11 +8,20 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.time.OffsetDateTime;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 @Entity
-@Table(name = "idempotency_key", uniqueConstraints = {@UniqueConstraint(name = "uk_idempotency_key", columnNames = "key")})
+@Table(name = "idempotency_key", uniqueConstraints = {
+    @UniqueConstraint(name = "uk_idempotency_key", columnNames = "key")
+})
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class IdempotencyKey {
 
   @Id
@@ -29,7 +38,7 @@ public class IdempotencyKey {
   @Column(name = "created_at", nullable = false)
   private OffsetDateTime createdAt;
 
-  public enum Status{
-    PENDING, COMPLETED, FAILED
+  public static IdempotencyKey completed(String key, String responseBody) {
+    return new IdempotencyKey(null, key, responseBody, OffsetDateTime.now());
   }
 }
