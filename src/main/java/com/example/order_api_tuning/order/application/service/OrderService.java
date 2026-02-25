@@ -19,8 +19,11 @@ import com.example.order_api_tuning.order.domain.entity.OrderItem;
 import com.example.order_api_tuning.order.domain.repository.OrderRepository;
 import com.example.order_api_tuning.order.domain.repository.OrderWriteRepo;
 import com.example.order_api_tuning.order.presentation.dto.OrderDetailDto;
+import com.example.order_api_tuning.order.presentation.experiment.dto.OrderCursorPageDto;
 import com.example.order_api_tuning.order.presentation.dto.OrderReqDto;
+import com.example.order_api_tuning.order.presentation.experiment.dto.OrderSummaryDto;
 import com.example.order_api_tuning.order.presentation.dto.OrderReqDto.ItemSpec;
+import com.example.order_api_tuning.order.presentation.experiment.dto.PartitionWriteReqDto;
 import com.example.order_api_tuning.order.presentation.dto.PartitionTestDto;
 import com.example.order_api_tuning.order.presentation.mapper.OrderDetailMapper;
 import com.example.order_api_tuning.payment.domain.entity.Payment;
@@ -31,6 +34,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +45,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -198,12 +204,57 @@ public class OrderService {
     return new PageImpl<>(dtos, pageable, page.getTotalElements());
   }
 
+
+  @Transactional(readOnly = true)
+  public OrderCursorPageDto getMyOrdersWithEntityGraphByCursor(Long memberId,
+      OffsetDateTime cursorCreatedAt, Long cursorId, int size) {
+    int pageSize = Math.max(1, Math.min(size, 100));
+    Pageable pageable = PageRequest.of(0, pageSize + 1,
+        Sort.by(Sort.Order.desc("createdAt"), Sort.Order.desc("id")));
+
+    List<Order> orders = orderRepository.findMyOrdersWithEntityGraphByCursor(memberId, cursorCreatedAt,
+        cursorId, pageable);
+
+    boolean hasNext = orders.size() > pageSize;
+    List<Order> current = hasNext ? orders.subList(0, pageSize) : orders;
+
+    List<OrderDetailDto> dtos = current.stream()
+        .map(orderDetailMapper::toDto)
+        .toList();
+
+    OffsetDateTime nextCursorCreatedAt = null;
+    Long nextCursorId = null;
+    if (hasNext && !current.isEmpty()) {
+      Order last = current.get(current.size() - 1);
+      nextCursorCreatedAt = last.getCreatedAt();
+      nextCursorId = last.getId();
+    }
+
+    return new OrderCursorPageDto(dtos, nextCursorCreatedAt, nextCursorId, hasNext);
+  }
+
+  @Transactional(readOnly = true)
+  public Page<OrderSummaryDto> getMyOrderSummaries(Long memberId, Pageable pageable) {
+    return orderRepository.findOrderSummariesByMemberId(memberId, pageable);
+  }
+
+
+  @Deprecated
   public void createOrderNotPartition(PartitionTestDto dto) {
+    createOrderNotPartition(new PartitionWriteReqDto(dto.memberId(), dto.price(), dto.createdAt()));
+  }
+
+  @Deprecated
+  public void createOrderPartition(PartitionTestDto dto) {
+    createOrderPartition(new PartitionWriteReqDto(dto.memberId(), dto.price(), dto.createdAt()));
+  }
+
+  public void createOrderNotPartition(PartitionWriteReqDto dto) {
     orderWriteRepo.insertNp(dto.memberId(), BigDecimal.valueOf(dto.price()),
         LocalDateTime.parse(dto.createdAt()));
   }
 
-  public void createOrderPartition(PartitionTestDto dto) {
+  public void createOrderPartition(PartitionWriteReqDto dto) {
     orderWriteRepo.insertPt(dto.memberId(), BigDecimal.valueOf(dto.price()),
         LocalDateTime.parse(dto.createdAt()));
   }

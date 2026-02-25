@@ -40,7 +40,9 @@ public class OrderController {
     return ResponseEntity.ok(ApiResponse.ok(meta));
   }
 
+
   @PostMapping("/np")
+  @Deprecated
   public ResponseEntity<ApiResponse<Void>> createOrderNotPartition(@RequestBody @Valid PartitionTestDto dto) {
     orderService.createOrderNotPartition(dto);
     ApiResponse.Meta meta = metaFactory.meta(null, null);
@@ -48,6 +50,7 @@ public class OrderController {
   }
 
   @PostMapping("/pt")
+  @Deprecated
   public ResponseEntity<ApiResponse<Void>> createOrderPartition(@RequestBody @Valid PartitionTestDto dto) {
     orderService.createOrderPartition(dto);
     ApiResponse.Meta meta = metaFactory.meta(null, null);
@@ -73,8 +76,6 @@ public class OrderController {
       @PathVariable Long memberId,
       @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC) Pageable pageable
   ) {
-//    Page<OrderDetailDto> page = orderService.getMyOrders(memberId, pageable);
-//    Page<OrderDetailDto> page = orderService.getMyOrdersWithFetchJoin(memberId, pageable);
     Page<OrderDetailDto> page = orderService.getMyOrdersWithEntityGraph(memberId, pageable);
     ApiResponse.Meta meta = metaFactory.meta(pageable, page);
     return ResponseEntity.ok(ApiResponse.ok(page.getContent(), meta));

@@ -3,6 +3,8 @@ package com.example.order_api_tuning.order.infrastructure;
 import com.example.order_api_tuning.member.domain.entity.Member;
 import com.example.order_api_tuning.order.domain.entity.Order;
 import com.example.order_api_tuning.order.domain.repository.OrderRepository;
+import com.example.order_api_tuning.order.presentation.experiment.dto.OrderSummaryDto;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -49,5 +51,17 @@ public class OrderRepositoryImpl implements OrderRepository {
   @Override
   public Page<Order> findMyOrdersWithEntityGraph(Long memberId, Pageable pageable) {
     return jpaOrderRepository.findMyOrdersWithEntityGraph(memberId,pageable);
+  }
+
+  @Override
+  public List<Order> findMyOrdersWithEntityGraphByCursor(Long memberId,
+      OffsetDateTime cursorCreatedAt, Long cursorId, Pageable pageable) {
+    return jpaOrderRepository.findMyOrdersWithEntityGraphByCursor(memberId, cursorCreatedAt, cursorId,
+        pageable);
+  }
+
+  @Override
+  public Page<OrderSummaryDto> findOrderSummariesByMemberId(Long memberId, Pageable pageable) {
+    return jpaOrderRepository.findOrderSummariesByMemberId(memberId, pageable);
   }
 }
