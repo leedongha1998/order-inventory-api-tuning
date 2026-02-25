@@ -1,9 +1,13 @@
 package com.example.order_api_tuning.order.presentation.dto;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public record PartitionTestDto(
-    Long memberId,
-    Integer price,
-    String createdAt
+    @NotNull Long memberId,
+    @NotNull @Min(0) Integer price,
+    @NotBlank String createdAt
 ) {
 
 }
