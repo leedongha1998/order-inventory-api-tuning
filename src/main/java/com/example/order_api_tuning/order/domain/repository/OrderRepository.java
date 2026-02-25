@@ -2,10 +2,12 @@ package com.example.order_api_tuning.order.domain.repository;
 
 import com.example.order_api_tuning.member.domain.entity.Member;
 import com.example.order_api_tuning.order.domain.entity.Order;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import com.example.order_api_tuning.order.presentation.experiment.dto.OrderSummaryDto;
 
 public interface OrderRepository {
 
@@ -22,4 +24,9 @@ public interface OrderRepository {
   List<Order> findWithItemsByIdIn(List<Long> ids);
 
   Page<Order> findMyOrdersWithEntityGraph(Long memberId, Pageable pageable);
+
+  List<Order> findMyOrdersWithEntityGraphByCursor(Long memberId, OffsetDateTime cursorCreatedAt,
+      Long cursorId, Pageable pageable);
+
+  Page<OrderSummaryDto> findOrderSummariesByMemberId(Long memberId, Pageable pageable);
 }

@@ -1,9 +1,11 @@
 package com.example.order_api_tuning.inventory.application.service;
 
-import com.example.order_api_tuning.inventory.presentation.dto.InventoryReqDto;
-import com.example.order_api_tuning.inventory.presentation.dto.InventoryResDto;
+import com.example.order_api_tuning.common.exception.BusinessException;
+import com.example.order_api_tuning.common.exception.ErrorCode;
 import com.example.order_api_tuning.inventory.domain.entity.Inventory;
 import com.example.order_api_tuning.inventory.domain.repository.InventoryRepository;
+import com.example.order_api_tuning.inventory.presentation.dto.InventoryReqDto;
+import com.example.order_api_tuning.inventory.presentation.dto.InventoryResDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,13 +18,15 @@ public class InventoryService {
 
   @Transactional(readOnly = true)
   public InventoryResDto getInventoryByProductId(Long productId) {
-    Inventory inventory = inventoryRepository.findByProductId(productId).orElseThrow();
+    Inventory inventory = inventoryRepository.findByProductId(productId)
+        .orElseThrow(() -> new BusinessException(ErrorCode.INVENTORY_NOT_FOUND));
     return InventoryResDto.from(inventory);
   }
 
   @Transactional
   public void updateInventory(Long productId, InventoryReqDto request) {
-    Inventory inventory = inventoryRepository.findByProductId(productId).orElseThrow();
+    Inventory inventory = inventoryRepository.findByProductId(productId)
+        .orElseThrow(() -> new BusinessException(ErrorCode.INVENTORY_NOT_FOUND));
     inventory.updateQuantity(request.quantity());
     inventoryRepository.save(inventory);
   }

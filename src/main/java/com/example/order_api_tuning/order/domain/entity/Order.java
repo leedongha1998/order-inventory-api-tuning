@@ -15,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
+import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -34,11 +35,16 @@ import org.hibernate.annotations.BatchSize;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-//@NamedEntityGraph(
-//    name = "Order.withMember",
-//    attributeNodes = {@NamedAttributeNode("member")}
-//)
-//@BatchSize(size = 256)
+@NamedEntityGraph(
+    name = "Order.withMemberAndItems",
+    attributeNodes = {
+        @NamedAttributeNode("member"),
+        @NamedAttributeNode(value = "items", subgraph = "itemsWithProduct")
+    },
+    subgraphs = {
+        @NamedSubgraph(name = "itemsWithProduct", attributeNodes = @NamedAttributeNode("product"))
+    }
+)
 public class Order {
 
   @Id

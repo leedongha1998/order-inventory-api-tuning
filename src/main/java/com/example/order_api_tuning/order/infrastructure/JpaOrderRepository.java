@@ -2,6 +2,8 @@ package com.example.order_api_tuning.order.infrastructure;
 
 import com.example.order_api_tuning.member.domain.entity.Member;
 import com.example.order_api_tuning.order.domain.entity.Order;
+import com.example.order_api_tuning.order.presentation.experiment.dto.OrderSummaryDto;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -42,7 +44,7 @@ public interface JpaOrderRepository extends JpaRepository<Order, Long> {
       """)
   List<Order> findWithItemsByIdIn(List<Long> ids);
 
-  @EntityGraph(value = "Order.withMember", type = EntityGraph.EntityGraphType.LOAD)
+  @EntityGraph(value = "Order.withMemberAndItems", type = EntityGraph.EntityGraphType.LOAD)
   @Query(value = """
       select o
       from Order o
@@ -55,4 +57,34 @@ public interface JpaOrderRepository extends JpaRepository<Order, Long> {
       where o.member.id = :memberId
       """)
   Page<Order> findMyOrdersWithEntityGraph(Long memberId, Pageable pageable);
+
+  @EntityGraph(value = "Order.withMemberAndItems", type = EntityGraph.EntityGraphType.LOAD)
+  @Query("""
+      select o
+      from Order o
+      where o.member.id = :memberId
+        and (
+          :cursorCreatedAt is null
+          or o.createdAt < :cursorCreatedAt
+          or (o.createdAt = :cursorCreatedAt and o.id < :cursorId)
+        )
+      order by o.createdAt desc, o.id desc
+      """)
+  List<Order> findMyOrdersWithEntityGraphByCursor(Long memberId, OffsetDateTime cursorCreatedAt,
+      Long cursorId, Pageable pageable);
+
+  @Query(value = """
+      select new com.example.order_api_tuning.order.presentation.experiment.dto.OrderSummaryDto(
+        o.id, o.status, o.totalAmount, o.createdAt
+      )
+      from Order o
+      where o.member.id = :memberId
+      order by o.createdAt desc
+      """,
+      countQuery = """
+      select count(o)
+      from Order o
+      where o.member.id = :memberId
+      """)
+  Page<OrderSummaryDto> findOrderSummariesByMemberId(Long memberId, Pageable pageable);
 }
