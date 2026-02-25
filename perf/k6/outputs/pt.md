@@ -1,8 +1,8 @@
-﻿# Order Write Bench - np
+﻿# Order Write Bench - pt
 
 - **Generated at**: 2025-09-13 15:57:41 +09:00
 - **Resolved BASE_URL**: http://spring-app:8080
-- **Resolved PATH_PREFIX**: /api/v1/orders/np
+- **Resolved PATH_PREFIX**: /api/v1/orders/pt
 - **Request Body ?덉떆**:
 
 ```json
