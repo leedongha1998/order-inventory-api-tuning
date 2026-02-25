@@ -42,7 +42,7 @@ public interface JpaOrderRepository extends JpaRepository<Order, Long> {
       """)
   List<Order> findWithItemsByIdIn(List<Long> ids);
 
-  @EntityGraph(value = "Order.withMember", type = EntityGraph.EntityGraphType.LOAD)
+  @EntityGraph(value = "Order.withMemberAndItems", type = EntityGraph.EntityGraphType.LOAD)
   @Query(value = """
       select o
       from Order o
