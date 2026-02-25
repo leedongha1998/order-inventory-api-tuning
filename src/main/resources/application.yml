@@ -1,8 +1,29 @@
+server:
+  tomcat:
+    threads:
+      max: ${SERVER_TOMCAT_THREADS_MAX:200}
+      min-spare: 20
+    accept-count: 200
+    connection-timeout: 5s
+    keep-alive-timeout: 15s
+  address: 0.0.0.0
+  port: 8080
+
 spring:
+  profiles:
+    active: idx-on
+  application:
+    name: order-api-tuning
   datasource:
     url: jdbc:postgresql://localhost:5432/api-tuning
     username: dongha
     password: dongha
+    hikari:
+      maximum-pool-size: ${HIKARI_MAX_POOL_SIZE:20}
+      minimum-idle: ${HIKARI_MIN_IDLE:10}
+      connection-timeout: 2000
+      idle-timeout: 600000 # 10m
+      max-lifetime: 1740000 # 29m
   jpa:
     hibernate:
       ddl-auto: validate
@@ -10,8 +31,57 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+        generate_statistics: true
+        jdbc:
+          batch_size: 50
+          batch_versioned_data: true
+        order_inserts: true
+        order_updates: true
   flyway:
     enabled: true
     baseline-on-migrate: true
     validate-on-migrate: true
     out-of-order: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      scenario: ${SCENARIO:baseline}   # A/B 비교용: normalized/denormalized 등
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+        "[jdbc.query]": true
+      slo:
+        "[http.server.requests]":
+          - 50ms
+          - 100ms
+          - 200ms
+          - 300ms
+          - 500ms
+          - 1s
+
+  prometheus:
+    metrics:
+      export:
+        step: 5s  # 스크랩 주기와 맞춤
+        enabled: true
+
+springdoc:
+  packages-to-scan: com.example.order_api_tuning
+  paths-to-match: /api/**
+  swagger-ui:
+    path: /swagger
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs

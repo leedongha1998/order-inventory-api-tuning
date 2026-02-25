@@ -1,0 +1,19 @@
+                                                                              QUERY PLAN                                                                              
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ GroupAggregate  (cost=53014.62..60376.06 rows=368072 width=16) (actual time=903.902..1000.346 rows=6 loops=1)
+   Group Key: (date_trunc('month'::text, created_at))
+   Buffers: shared hit=244 read=1163, temp read=539 written=541
+   ->  Sort  (cost=53014.62..53934.80 rows=368072 width=8) (actual time=893.336..969.347 rows=366000 loops=1)
+         Sort Key: (date_trunc('month'::text, created_at)) DESC
+         Sort Method: external merge  Disk: 4312kB
+         Buffers: shared hit=244 read=1163, temp read=539 written=541
+         ->  Index Only Scan using idx_np_created_id on orders_np  (cost=0.42..13954.05 rows=368072 width=8) (actual time=0.032..616.592 rows=366000 loops=1)
+               Index Cond: ((created_at >= '2025-04-01 00:00:00+09'::timestamp with time zone) AND (created_at < '2025-10-01 00:00:00+09'::timestamp with time zone))
+               Heap Fetches: 101
+               Buffers: shared hit=244 read=1163
+ Planning:
+   Buffers: shared hit=3 read=1
+ Planning Time: 0.660 ms
+ Execution Time: 1005.756 ms
+(15 rows)
+

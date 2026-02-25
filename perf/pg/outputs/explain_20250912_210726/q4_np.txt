@@ -1,0 +1,14 @@
+                                                                           QUERY PLAN                                                                           
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=2431.91..2431.92 rows=1 width=8) (actual time=22.770..22.772 rows=1 loops=1)
+   Buffers: shared hit=241
+   ->  Index Only Scan using idx_np_created_id on orders_np  (cost=0.42..2271.97 rows=63977 width=0) (actual time=1.910..16.362 rows=62000 loops=1)
+         Index Cond: ((created_at >= '2025-07-01 00:00:00+09'::timestamp with time zone) AND (created_at < '2025-08-01 00:00:00+09'::timestamp with time zone))
+         Heap Fetches: 0
+         Buffers: shared hit=241
+ Planning:
+   Buffers: shared hit=6
+ Planning Time: 0.187 ms
+ Execution Time: 22.814 ms
+(10 rows)
+

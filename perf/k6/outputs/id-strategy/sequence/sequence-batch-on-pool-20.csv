@@ -1,0 +1,2 @@
+strategy,batch_mode,pool_size,rps,total_requests,requests_per_sec,failure_rate_pct,avg_ms,p50_ms,p95_ms,p99_ms,max_ms,success_count,error_count,status_2xx,status_4xx,status_5xx
+SEQUENCE,on,20,500,90587,413.50,99.98,543.55,33.70,2850.44,3683.19,5226.68,0,90587,14,90152,421

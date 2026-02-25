@@ -1,0 +1,30 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+  scrape_timeout: 4s
+
+scrape_configs:
+  # Spring Boot (Actuator)
+  - job_name: "spring-boot"
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["app:8080"]          # compose 서비스명이 app
+        labels: {env: "local", app: "order-api-tuning"}
+
+  # PostgreSQL (postgres_exporter)
+  - job_name: "postgres-exporter"
+    static_configs:
+      - targets: ["postgres-exporter:9187"]
+        labels: {env: "local", db: "postgres"}
+
+  # Redis (redis_exporter)
+  - job_name: "redis-exporter"
+    static_configs:
+      - targets: ["redis-exporter:9121"]
+        labels: {env: "local", cache: "redis"}
+
+  # cAdvisor (컨테이너 리소스)
+  - job_name: "cadvisor"
+    static_configs:
+      - targets: ["cadvisor:8080"]
+        labels: {env: "local", src: "cadvisor"}

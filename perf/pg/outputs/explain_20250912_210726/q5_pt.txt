@@ -1,0 +1,35 @@
+                                                                               QUERY PLAN                                                                               
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ GroupAggregate  (cost=50645.12..57965.12 rows=366000 width=16) (actual time=412.151..492.920 rows=6 loops=1)
+   Group Key: (date_trunc('month'::text, orders_pt.created_at))
+   Buffers: shared hit=3584, temp read=539 written=541
+   ->  Sort  (cost=50645.12..51560.12 rows=366000 width=8) (actual time=401.731..464.120 rows=366000 loops=1)
+         Sort Key: (date_trunc('month'::text, orders_pt.created_at)) DESC
+         Sort Method: external merge  Disk: 4312kB
+         Buffers: shared hit=3584, temp read=539 written=541
+         ->  Append  (cost=0.00..11819.00 rows=366000 width=8) (actual time=0.014..171.697 rows=366000 loops=1)
+               Buffers: shared hit=3584
+               ->  Seq Scan on orders_pt_2025_04 orders_pt_1  (cost=0.00..1638.00 rows=60000 width=8) (actual time=0.014..23.496 rows=60000 loops=1)
+                     Filter: ((created_at >= '2025-04-01 00:00:00+09'::timestamp with time zone) AND (created_at < '2025-10-01 00:00:00+09'::timestamp with time zone))
+                     Buffers: shared hit=588
+               ->  Seq Scan on orders_pt_2025_05 orders_pt_2  (cost=0.00..1692.00 rows=62000 width=8) (actual time=0.022..24.393 rows=62000 loops=1)
+                     Filter: ((created_at >= '2025-04-01 00:00:00+09'::timestamp with time zone) AND (created_at < '2025-10-01 00:00:00+09'::timestamp with time zone))
+                     Buffers: shared hit=607
+               ->  Seq Scan on orders_pt_2025_06 orders_pt_3  (cost=0.00..1638.00 rows=60000 width=8) (actual time=0.018..23.517 rows=60000 loops=1)
+                     Filter: ((created_at >= '2025-04-01 00:00:00+09'::timestamp with time zone) AND (created_at < '2025-10-01 00:00:00+09'::timestamp with time zone))
+                     Buffers: shared hit=588
+               ->  Seq Scan on orders_pt_2025_07 orders_pt_4  (cost=0.00..1692.00 rows=62000 width=8) (actual time=0.012..23.236 rows=62000 loops=1)
+                     Filter: ((created_at >= '2025-04-01 00:00:00+09'::timestamp with time zone) AND (created_at < '2025-10-01 00:00:00+09'::timestamp with time zone))
+                     Buffers: shared hit=607
+               ->  Seq Scan on orders_pt_2025_08 orders_pt_5  (cost=0.00..1692.00 rows=62000 width=8) (actual time=0.013..24.428 rows=62000 loops=1)
+                     Filter: ((created_at >= '2025-04-01 00:00:00+09'::timestamp with time zone) AND (created_at < '2025-10-01 00:00:00+09'::timestamp with time zone))
+                     Buffers: shared hit=607
+               ->  Seq Scan on orders_pt_2025_09 orders_pt_6  (cost=0.00..1637.00 rows=60000 width=8) (actual time=0.025..20.421 rows=60000 loops=1)
+                     Filter: ((created_at >= '2025-04-01 00:00:00+09'::timestamp with time zone) AND (created_at < '2025-10-01 00:00:00+09'::timestamp with time zone))
+                     Buffers: shared hit=587
+ Planning:
+   Buffers: shared hit=239 read=12 dirtied=5
+ Planning Time: 17.143 ms
+ Execution Time: 497.304 ms
+(31 rows)
+

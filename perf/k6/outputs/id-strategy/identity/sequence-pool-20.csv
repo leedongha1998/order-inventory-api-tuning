@@ -1,0 +1,2 @@
+strategy,pool_size,rps,total_requests,requests_per_sec,failure_rate_pct,avg_ms,p50_ms,p95_ms,p99_ms,max_ms,success_count,error_count,status_2xx,status_4xx,status_5xx
+SEQUENCE,20,500,89191,411.22,99.98,743.07,19.14,3985.98,4937.75,6392.16,0,89191,14,88523,654

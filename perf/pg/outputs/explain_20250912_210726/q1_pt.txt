@@ -1,0 +1,13 @@
+                                                                                   QUERY PLAN                                                                                    
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.29..6.11 rows=100 width=40) (actual time=0.029..0.404 rows=100 loops=1)
+   Buffers: shared hit=95
+   ->  Index Scan using orders_pt_2025_07_created_at_id_idx on orders_pt_2025_07 orders_pt  (cost=0.29..3608.47 rows=62000 width=40) (actual time=0.028..0.392 rows=100 loops=1)
+         Index Cond: ((created_at >= '2025-07-01 00:00:00+09'::timestamp with time zone) AND (created_at < '2025-08-01 00:00:00+09'::timestamp with time zone))
+         Buffers: shared hit=95
+ Planning:
+   Buffers: shared hit=216 read=7 dirtied=2
+ Planning Time: 11.566 ms
+ Execution Time: 0.438 ms
+(9 rows)
+

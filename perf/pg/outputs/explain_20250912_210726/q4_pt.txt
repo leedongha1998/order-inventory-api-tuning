@@ -1,0 +1,13 @@
+                                                                         QUERY PLAN                                                                         
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=1692.00..1692.01 rows=1 width=8) (actual time=25.874..25.876 rows=1 loops=1)
+   Buffers: shared hit=607
+   ->  Seq Scan on orders_pt_2025_07 orders_pt  (cost=0.00..1537.00 rows=62000 width=0) (actual time=0.011..18.648 rows=62000 loops=1)
+         Filter: ((created_at >= '2025-07-01 00:00:00+09'::timestamp with time zone) AND (created_at < '2025-08-01 00:00:00+09'::timestamp with time zone))
+         Buffers: shared hit=607
+ Planning:
+   Buffers: shared hit=6
+ Planning Time: 0.269 ms
+ Execution Time: 25.913 ms
+(9 rows)
+

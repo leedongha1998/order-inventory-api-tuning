@@ -1,0 +1,34 @@
+﻿[
+    {
+        "container":  "spring-app",
+        "samples":  47,
+        "window_seconds":  230,
+        "cpu_percent_avg":  347.87,
+        "cpu_percent_p95":  557.67,
+        "cpu_percent_max":  590.53,
+        "mem_percent_avg":  8.69,
+        "mem_percent_max":  9.46,
+        "mem_used_peak_bytes":  772905370,
+        "mem_limit_bytes":  8173322764,
+        "block_io_total_read_bytes":  0,
+        "block_io_total_write_bytes":  125645,
+        "block_io_read_bps":  0,
+        "block_io_write_bps":  546
+    },
+    {
+        "container":  "my-postgres",
+        "samples":  47,
+        "window_seconds":  230,
+        "cpu_percent_avg":  88.46,
+        "cpu_percent_p95":  127.93,
+        "cpu_percent_max":  129.28,
+        "mem_percent_avg":  2.36,
+        "mem_percent_max":  2.44,
+        "mem_used_peak_bytes":  199439155,
+        "mem_limit_bytes":  8173322764,
+        "block_io_total_read_bytes":  0,
+        "block_io_total_write_bytes":  0,
+        "block_io_read_bps":  0,
+        "block_io_write_bps":  0
+    }
+]
