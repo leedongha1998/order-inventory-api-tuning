@@ -86,3 +86,9 @@ springdoc:
     operations-sorter: alpha
   api-docs:
     path: /v3/api-docs
+
+
+experiment:
+  cache:
+    summary:
+      default-ttl-seconds: ${EXPERIMENT_SUMMARY_CACHE_TTL_SECONDS:30}

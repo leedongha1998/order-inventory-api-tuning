@@ -121,3 +121,46 @@
 ## 7) 주의사항
 - Keyset은 정렬 키(`createdAt`, `id`)의 안정성이 중요하므로, 정렬 조건 변경 시 커서 규칙을 함께 변경해야 합니다.
 - Summary API는 상세 item 정보가 없으므로, UI/클라이언트 요구사항에 따라 상세 조회 API와 병행 운영이 필요합니다.
+
+---
+
+## 8) 추가 진행: 우선순위 3~6 구현 반영
+
+`ADDITIONAL_PERF_EXPERIMENT_TOPICS_KO.md` 기준으로, 기존 1~2번(키셋/요약 DTO)에 이어 아래 항목을 추가 반영했습니다.
+
+### 8-1. 우선순위 3) Cache(짧은 TTL)
+- 신규 실험 엔드포인트:
+  - `GET /api/v1/experiments/orders/{memberId}/me/summary/cached`
+- 동작:
+  - Redis cache-aside 패턴으로 summary 페이지를 캐싱
+  - 응답 헤더 `X-Experiment-Cache-Hit`로 hit/miss 식별
+  - `ttlSeconds` 쿼리 파라미터로 TTL 실험(5/30/60s 등)
+  - Redis 연결 실패/직렬화 실패 시에도 DB fallback으로 API는 정상 응답(실험 안정성 강화)
+  - Micrometer metric `order.summary.cache.result{result=...}`로 hit/miss/fallback 오류 관측 가능
+
+### 8-2. 우선순위 4) Covering Index + EXPLAIN BUFFERS
+- Flyway 마이그레이션 추가:
+  - `V12__add_covering_index_for_order_summary.sql`
+- 인덱스:
+  - `(member_id, created_at DESC, id DESC) INCLUDE (status, total_amount)`
+- 목적:
+  - Summary 조회 시 heap fetch 감소 여부와 p95/p99 개선 관찰
+
+### 8-3. 우선순위 5) Soak test + autovacuum 검증
+- SQL 관측 스크립트 추가:
+  - `scripts/experiments/b3_autovacuum_observe.sql`
+- 확인 지표:
+  - `pg_stat_user_tables` dead tuples / autovacuum 이력
+  - `pg_stat_bgwriter` 체크포인트 지표
+
+### 8-4. 우선순위 6) Partition pruning 검증
+- SQL 검증 스크립트 추가:
+  - `scripts/experiments/b2_partition_pruning_check.sql`
+- 비교 방식:
+  - 파티션 키(created_at) 조건 포함/미포함 쿼리의 `EXPLAIN (ANALYZE, BUFFERS)` 비교
+
+### 8-5. 부하 테스트 스크립트
+- 신규 k6 시나리오:
+  - `perf/k6/scenarios/order-summary-cache.js`
+- 목적:
+  - 캐시 사용 여부(USE_CACHE)와 TTL 별 hit ratio 및 latency 비교
