@@ -41,13 +41,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.RedisConnectionFailureException;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,6 +70,12 @@ public class OrderService {
   private final CouponRepository couponRepository;
   private final OrderWriteRepo orderWriteRepo;
   private final IdempotencyKeyJpaRepository idempotencyKeyJpaRepository;
+  private final StringRedisTemplate stringRedisTemplate;
+  private final ObjectMapper objectMapper;
+  private final MeterRegistry meterRegistry;
+
+  @Value("${experiment.cache.summary.default-ttl-seconds:30}")
+  private long defaultSummaryCacheTtlSeconds;
 
   @Transactional
   public void createOrder(OrderReqDto request, String idempotencyKey) {
@@ -237,6 +249,80 @@ public class OrderService {
   public Page<OrderSummaryDto> getMyOrderSummaries(Long memberId, Pageable pageable) {
     return orderRepository.findOrderSummariesByMemberId(memberId, pageable);
   }
+
+  @Transactional(readOnly = true)
+  public SummaryPageCacheResult getMyOrderSummariesWithCache(Long memberId, Pageable pageable,
+      Long ttlSeconds) {
+    long effectiveTtlSeconds = ttlSeconds == null || ttlSeconds <= 0
+        ? defaultSummaryCacheTtlSeconds : ttlSeconds;
+    String cacheKey = buildSummaryCacheKey(memberId, pageable);
+
+    String cached = safeGetCache(cacheKey);
+    if (cached != null) {
+      CachedSummaryPage cachedPage = readCachedSummaryPage(cached);
+      if (cachedPage != null) {
+        Page<OrderSummaryDto> page = new PageImpl<>(cachedPage.content(), pageable,
+            cachedPage.totalElements());
+        incrementCacheMetric("hit");
+        return new SummaryPageCacheResult(page, true);
+      }
+    }
+
+    Page<OrderSummaryDto> page = orderRepository.findOrderSummariesByMemberId(memberId, pageable);
+    incrementCacheMetric("miss");
+    writeSummaryCache(cacheKey, page, effectiveTtlSeconds);
+    return new SummaryPageCacheResult(page, false);
+  }
+
+  private String buildSummaryCacheKey(Long memberId, Pageable pageable) {
+    String sort = pageable.getSort().stream()
+        .map(order -> order.getProperty() + ":" + order.getDirection())
+        .reduce((a, b) -> a + "," + b)
+        .orElse("unsorted");
+    return "exp:orders:summary:member:" + memberId
+        + ":page:" + pageable.getPageNumber()
+        + ":size:" + pageable.getPageSize()
+        + ":sort:" + sort;
+  }
+
+
+  private String safeGetCache(String cacheKey) {
+    try {
+      return stringRedisTemplate.opsForValue().get(cacheKey);
+    } catch (RedisConnectionFailureException e) {
+      incrementCacheMetric("fallback_read_error");
+      return null;
+    }
+  }
+
+  private CachedSummaryPage readCachedSummaryPage(String cachedJson) {
+    try {
+      return objectMapper.readValue(cachedJson, CachedSummaryPage.class);
+    } catch (JsonProcessingException e) {
+      incrementCacheMetric("deserialize_error");
+      return null;
+    }
+  }
+
+  private void writeSummaryCache(String cacheKey, Page<OrderSummaryDto> page, long ttlSeconds) {
+    CachedSummaryPage payload = new CachedSummaryPage(page.getContent(), page.getTotalElements());
+    try {
+      String json = objectMapper.writeValueAsString(payload);
+      stringRedisTemplate.opsForValue().set(cacheKey, json, java.time.Duration.ofSeconds(ttlSeconds));
+    } catch (JsonProcessingException | RedisConnectionFailureException ignored) {
+      incrementCacheMetric("write_error");
+      // 캐시 처리 실패는 API 실패로 확장하지 않음
+    }
+  }
+
+
+  private void incrementCacheMetric(String result) {
+    meterRegistry.counter("order.summary.cache.result", "result", result).increment();
+  }
+
+  public record SummaryPageCacheResult(Page<OrderSummaryDto> page, boolean cacheHit) {}
+
+  private record CachedSummaryPage(List<OrderSummaryDto> content, long totalElements) {}
 
 
   @Deprecated

@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -70,5 +71,20 @@ public class OrderExperimentController {
     Page<OrderSummaryDto> page = orderService.getMyOrderSummaries(memberId, pageable);
     ApiResponse.Meta meta = metaFactory.meta(pageable, page);
     return ResponseEntity.ok(ApiResponse.ok(page.getContent(), meta));
+  }
+
+  @GetMapping("/{memberId}/me/summary/cached")
+  public ResponseEntity<ApiResponse<List<OrderSummaryDto>>> getMyOrderSummariesCached(
+      @PathVariable Long memberId,
+      @PageableDefault(size = 20, sort = "createdAt", direction = Direction.DESC) Pageable pageable,
+      @RequestParam(required = false) Long ttlSeconds
+  ) {
+    OrderService.SummaryPageCacheResult result = orderService.getMyOrderSummariesWithCache(memberId,
+        pageable, ttlSeconds);
+    ApiResponse.Meta meta = metaFactory.meta(pageable, result.page());
+    return ResponseEntity.ok()
+        .header(HttpHeaders.CACHE_CONTROL, "private, max-age=0")
+        .header("X-Experiment-Cache-Hit", Boolean.toString(result.cacheHit()))
+        .body(ApiResponse.ok(result.page().getContent(), meta));
   }
 }
